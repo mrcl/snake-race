@@ -1,0 +1,30 @@
+.board-component {
+  min-height: fit-content;
+  min-width: fit-content;
+  .row {
+    height: 1rem;
+    min-height: 1rem;
+    max-height: 1rem;
+    margin: 1px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    .cell {
+      display: inline-flex;
+      flex-wrap: nowrap;
+      width: 1rem;
+      min-width: 1rem;
+      max-width: 1rem;
+      height: 1rem;
+      min-height: 1rem;
+      max-height: 1rem;
+      margin: 1px;
+      background: #ddd;
+
+      .player {
+        background: #000;
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+  }
+}

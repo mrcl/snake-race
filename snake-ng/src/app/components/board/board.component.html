@@ -1,0 +1,9 @@
+<div class="board-component">
+
+  <div class="row" *ngFor="let cells of grid$ | async">
+    <div class="cell" *ngFor="let cell of cells">
+      <div class="player" *ngIf="cell > 0"></div>
+    </div>
+  </div>
+
+</div>
