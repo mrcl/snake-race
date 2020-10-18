@@ -1,45 +1,9 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { Player } from './player.model';
 
+export type boardMatrix = number[][];
 
-
-class Player {
-  public id: string;
-  public x: number;
-  public y: number;
-
-  constructor() {
-    this.id = uuidv4();
-  }
-
-  public ArrowUp(): void {
-    this.y--;
-  }
-
-  public ArrowDown(): void {
-    this.y++;
-  }
-
-  public ArrowLeft(): void {
-    this.x--;
-  }
-
-  public ArrowRight(): void {
-    this.x++;
-  }
-
-  public randomizePos(horSize: number, vertSize: number): void {
-    this.x = Math.round(Math.random() * horSize);
-    this.y = Math.round(Math.random() * vertSize);
-  }
-
-  public isAtPos(x: number, y: number): boolean {
-    return this.x === x && this.y === y;
-  }
-}
-
-class Board {
+export class Board {
 
   private palyers: Player[] = [];
   private width: number;
@@ -103,42 +67,4 @@ class Board {
     player[commad]();
     this.refreshBoard();
   }
-}
-
-
-@Injectable({
-  providedIn: 'root'
-})
-export class GameEngineService {
-
-  private horizontalSize = 50;
-  private verticalSize = 50;
-
-  private board: Board;
-
-  // private grid: BehaviorSubject<boardMatrix> = new BehaviorSubject([[]]);
-  // public grid$: Observable<boardMatrix> = this.grid.asObservable();
-
-  constructor() {}
-
-  public newGame(): void {
-    this.board = new Board(this.horizontalSize, this.verticalSize);
-    this.board.addPlayer();
-  }
-
-  public addPlayer(): string {
-    return this.board.addPlayer();
-  }
-
-  public boardAsObservable(): Observable<boardMatrix> {
-    return this.board.asObservable();
-  }
-
-  public movePlayer(playerId: string, commad: string): void {
-    this.board.movePlayer(playerId, commad);
-  }
-
-
-
-
 }
