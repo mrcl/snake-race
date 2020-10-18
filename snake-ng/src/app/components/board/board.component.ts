@@ -1,7 +1,6 @@
 import { GameEngineService, boardMatrix } from './../../services/game-engine.service';
 import { Component, HostListener, OnInit } from '@angular/core';
-import { interval, Observable } from 'rxjs';
-import { debounce } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-board',
@@ -20,6 +19,10 @@ export class BoardComponent implements OnInit {
     this.playerId = this.gameEngineService.addPlayer();
 
     this.grid$ = this.gameEngineService.boardAsObservable();
+
+    this.gameEngineService.getMessage().subscribe(
+      res => console.log(res)
+    );
 
   }
 

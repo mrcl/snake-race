@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 
-
+export type boardMatrix = number[][];
 
 class Player {
   public id: string;
@@ -116,10 +118,18 @@ export class GameEngineService {
 
   private board: Board;
 
-  // private grid: BehaviorSubject<boardMatrix> = new BehaviorSubject([[]]);
-  // public grid$: Observable<boardMatrix> = this.grid.asObservable();
+  constructor(private socket: Socket) {
+    this.sendMessage('Test')
+  }
 
-  constructor() {}
+  public sendMessage(msg: string): void{
+    this.socket.emit('message', msg);
+  }
+  public getMessage(): Observable<any> {
+     return this.socket
+         .fromEvent('message')
+         .pipe(map((data: any) => data.msg));
+  }
 
   public newGame(): void {
     this.board = new Board(this.horizontalSize, this.verticalSize);
