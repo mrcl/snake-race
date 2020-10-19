@@ -1,5 +1,6 @@
 import { Board } from '../../models/board.model';
 import { Injectable } from '@nestjs/common';
+import { Player } from 'src/models/player.model';
 
 @Injectable()
 export class SnakeGameService  {
@@ -10,11 +11,11 @@ export class SnakeGameService  {
     this.board = new Board(50, 50);
   }
 
-  public getBoard() {
-    return this.board
+  public getBoardDetails() {
+    return this.board.getDetails();
   }
 
-  public addPlayer(): string {
+  public addPlayer(): Player {
     return this.board.addPlayer();
   }
 

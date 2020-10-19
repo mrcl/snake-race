@@ -3,6 +3,12 @@ import { Player } from './player.model';
 
 export type boardMatrix = number[][];
 
+export interface BoardDetails {
+  players: Player[];
+  width: number;
+  height: number;
+}
+
 export class Board {
 
   private palyers: Player[] = [];
@@ -16,6 +22,14 @@ export class Board {
     this.width = width;
     this.height = height;
     this.buildGrid();
+  }
+
+  public getDetails(): BoardDetails {
+    return {
+      players: this.palyers,
+      width: this.width,
+      height: this.height,
+    }
   }
 
   public asObservable(): Observable<boardMatrix> {
@@ -54,12 +68,12 @@ export class Board {
     this.renderPlayers();
   }
 
-  public addPlayer(): string {
+  public addPlayer(): Player {
     const player = new Player();
     player.randomizePos(this.width, this.height);
     this.palyers.push(player);
     this.renderPlayer(player.id);
-    return player.id;
+    return player;
   }
 
   public movePlayer(id: string, commad: string): void {

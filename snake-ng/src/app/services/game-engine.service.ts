@@ -6,38 +6,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type boardMatrix = number[][];
 
+interface PlayerInterface {
+  id: string;
+  x: number;
+  y: number;
+}
+
 class Player {
   public id: string;
   public x: number;
   public y: number;
 
-  constructor() {
-    this.id = uuidv4();
-  }
-
-  public ArrowUp(): void {
-    this.y--;
-  }
-
-  public ArrowDown(): void {
-    this.y++;
-  }
-
-  public ArrowLeft(): void {
-    this.x--;
-  }
-
-  public ArrowRight(): void {
-    this.x++;
-  }
-
-  public randomizePos(horSize: number, vertSize: number): void {
-    this.x = Math.round(Math.random() * horSize);
-    this.y = Math.round(Math.random() * vertSize);
-  }
-
-  public isAtPos(x: number, y: number): boolean {
-    return this.x === x && this.y === y;
+  constructor(player: PlayerInterface) {
+    Object.assign(this, player)
   }
 }
 
@@ -50,7 +31,7 @@ class Board {
   private grid: BehaviorSubject<boardMatrix> = new BehaviorSubject([[]]);
   public grid$: Observable<boardMatrix> = this.grid.asObservable();
 
-  constructor(width, height) {
+  constructor(width=0, height=0) {
     this.width = width;
     this.height = height;
     this.buildGrid();
@@ -81,6 +62,8 @@ class Board {
     const grid =  this.grid.value;
     grid[player.y][player.x] = 1;
     this.grid.next(grid);
+
+    console.log()
   }
 
   private renderPlayers(): void {
@@ -92,17 +75,14 @@ class Board {
     this.renderPlayers();
   }
 
-  public addPlayer(): string {
-    const player = new Player();
-    player.randomizePos(this.width, this.height);
-    this.palyers.push(player);
-    this.renderPlayer(player.id);
-    return player.id;
+  public setBoardParameters(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+    this.buildGrid();
   }
 
-  public movePlayer(id: string, commad: string): void {
-    const player = this.palyers.find(pl => pl.id = id);
-    player[commad]();
+  public setPlayers(players: Player[]) {
+    this.palyers = players;
     this.refreshBoard();
   }
 }
@@ -113,31 +93,26 @@ class Board {
 })
 export class GameEngineService {
 
-  private horizontalSize = 50;
-  private verticalSize = 50;
-
-  private board: Board;
+  private board: Board = new Board();
 
   constructor(private socket: Socket) {
-    this.sendMessage('Test')
+    this.socket.fromEvent('connected').subscribe(
+      (res: any) => {
+        console.log('connected', res);
+        this.board.setBoardParameters(res.board.width, res.board.height);
+        this.board.setPlayers(res.board.players.map(player => new Player(player)))
+      }
+    )
   }
 
   public sendMessage(msg: string): void{
     this.socket.emit('message', msg);
   }
+
   public getMessage(): Observable<any> {
      return this.socket
          .fromEvent('message')
          .pipe(map((data: any) => data.msg));
-  }
-
-  public newGame(): void {
-    this.board = new Board(this.horizontalSize, this.verticalSize);
-    this.board.addPlayer();
-  }
-
-  public addPlayer(): string {
-    return this.board.addPlayer();
   }
 
   public boardAsObservable(): Observable<boardMatrix> {
@@ -145,10 +120,7 @@ export class GameEngineService {
   }
 
   public movePlayer(playerId: string, commad: string): void {
-    this.board.movePlayer(playerId, commad);
+    // this.board.movePlayer(playerId, commad);
   }
-
-
-
 
 }

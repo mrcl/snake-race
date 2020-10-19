@@ -15,9 +15,6 @@ export class BoardComponent implements OnInit {
   constructor(private gameEngineService: GameEngineService) { }
 
   ngOnInit(): void {
-    this.gameEngineService.newGame();
-    this.playerId = this.gameEngineService.addPlayer();
-
     this.grid$ = this.gameEngineService.boardAsObservable();
 
     this.gameEngineService.getMessage().subscribe(
