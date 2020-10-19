@@ -2,6 +2,13 @@ import { GameEngineService, boardMatrix } from './../../services/game-engine.ser
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
+const ALLOWED_COMMANDS = [
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+]
+
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -24,8 +31,10 @@ export class BoardComponent implements OnInit {
   }
 
   @HostListener('window:keydown', ['$event'])
-  onKeyDown(event): void {
+  onKeyDown(event: KeyboardEvent): void {
+    if (ALLOWED_COMMANDS.includes(event.key)) {
       this.gameEngineService.movePlayer(this.playerId, event.key);
+    }
   }
 
 }

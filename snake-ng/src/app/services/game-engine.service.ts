@@ -18,7 +18,9 @@ class Player {
   public y: number;
 
   constructor(player: PlayerInterface) {
-    Object.assign(this, player)
+    this.id = player.id;
+    this.x = player.x;
+    this.y = player.y;
   }
 }
 
@@ -59,11 +61,11 @@ class Board {
 
   private renderPlayer(id: string): void {
     const player = this.palyers.find(pl => pl.id = id);
-    const grid =  this.grid.value;
-    grid[player.y][player.x] = 1;
-    this.grid.next(grid);
-
-    console.log()
+    if (player) {
+      const grid =  this.grid.value;
+      grid[player.y][player.x] = 1;
+      this.grid.next(grid);
+    }
   }
 
   private renderPlayers(): void {
@@ -75,14 +77,26 @@ class Board {
     this.renderPlayers();
   }
 
-  public setBoardParameters(width: number, height: number) {
+  public setBoardParameters(width: number, height: number): void {
     this.width = width;
     this.height = height;
     this.buildGrid();
   }
 
-  public setPlayers(players: Player[]) {
+  public setPlayers(players: Player[]): void {
     this.palyers = players;
+    this.refreshBoard();
+  }
+
+  public updatePlayer(player: PlayerInterface): void {
+    const index = this.palyers.map(pl => pl.id).indexOf(player.id);
+    console.log('updatePlayer', index, this.palyers[index])
+    if (index > -1) {
+      this.palyers[index] = new Player(player);
+    } else {
+      this.palyers.push(new Player(player));
+    }
+    console.log(this.palyers);
     this.refreshBoard();
   }
 }
@@ -94,15 +108,23 @@ class Board {
 export class GameEngineService {
 
   private board: Board = new Board();
+  private player: Player;
 
   constructor(private socket: Socket) {
     this.socket.fromEvent('connected').subscribe(
       (res: any) => {
-        console.log('connected', res);
+        console.log(res)
         this.board.setBoardParameters(res.board.width, res.board.height);
-        this.board.setPlayers(res.board.players.map(player => new Player(player)))
+        this.board.setPlayers(res.board.players.map(player => new Player(player)));
+        this.player = new Player(res.player);
       }
-    )
+    );
+
+    this.socket.fromEvent('updatedPlayer').subscribe(
+      (player: PlayerInterface) => {
+        this.board.updatePlayer(player);
+      }
+    );
   }
 
   public sendMessage(msg: string): void{
@@ -119,8 +141,11 @@ export class GameEngineService {
     return this.board.asObservable();
   }
 
-  public movePlayer(playerId: string, commad: string): void {
-    // this.board.movePlayer(playerId, commad);
+  public movePlayer(playerId: string, command: string): void {
+    this.socket.emit('movePlayer', {
+      id: this.player.id,
+      command
+    });
   }
 
 }

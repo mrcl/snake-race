@@ -19,8 +19,9 @@ export class SnakeGameService  {
     return this.board.addPlayer();
   }
 
-  public movePlayer(playerId: string, commad: string): void {
-    this.board.movePlayer(playerId, commad);
+  public movePlayer(playerId: string, commad: string): Player {
+    console.log(playerId, commad)
+    return this.board.movePlayer(playerId, commad);
   }
 
 }

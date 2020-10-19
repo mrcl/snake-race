@@ -76,9 +76,10 @@ export class Board {
     return player;
   }
 
-  public movePlayer(id: string, commad: string): void {
+  public movePlayer(id: string, commad: string): Player {
     const player = this.palyers.find(pl => pl.id = id);
     player[commad]();
     this.refreshBoard();
+    return player;
   }
 }

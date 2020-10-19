@@ -21,16 +21,13 @@ export class SnakeGameGateway implements OnGatewayConnection{
     });
   }
 
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    console.log(client.id, payload);
-    client.emit('message', {msg: 'Hello'});
-    return 'Hello world!';
-  }
-
   @SubscribeMessage('movePlayer')
   handleMovePlayer(client: Socket, playerMove: PlayerMove): void{
     const player = this.snakeGameService.movePlayer(playerMove.id, playerMove.command);
+    console.log(player)
+
+    client.emit('updatedPlayer', player);
     client.broadcast.emit('updatedPlayer', {player});
+
   }
 }
